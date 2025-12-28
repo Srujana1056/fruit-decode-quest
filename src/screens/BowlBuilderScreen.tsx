@@ -1,37 +1,44 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fruits } from '@/data/dummyData';
-import { useCart, CartItem } from '@/context/CartContext';
-import QuantitySelector from '@/components/QuantitySelector';
+import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Check, ShoppingCart } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const BowlBuilderScreen = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isSubscriptionMode = searchParams.get('subscription') === 'true';
-  const { cart, addToCart, updateQuantity, removeFromCart, setIsSubscription, getOrderPrice, getTotalItems } = useCart();
+  const { cart, addToCart, removeFromCart, setIsSubscription, ONE_TIME_BOWL_PRICE, REQUIRED_FRUITS, getSelectedFruitsCount, clearCart } = useCart();
   const [bowlName, setBowlName] = useState('');
 
-  // Set subscription mode when entering from subscription flow
-  useEffect(() => {
-    if (isSubscriptionMode) {
-      setIsSubscription(true);
-    }
-  }, [isSubscriptionMode, setIsSubscription]);
+  // Always one-time mode for bowl builder
+  setIsSubscription(false);
 
   // Get fruits that are in the cart
   const bowlItems = cart.filter(item => item.type === 'fruit');
-
-  // Max 5 fruits for subscription
-  const MAX_FRUITS = 5;
-  const canAddMoreFruits = bowlItems.length < MAX_FRUITS;
+  const selectedCount = getSelectedFruitsCount();
+  const canAddMoreFruits = selectedCount < REQUIRED_FRUITS;
 
   const handleAddFruit = (fruit: typeof fruits[0]) => {
-    if (isSubscriptionMode && !canAddMoreFruits) {
-      alert(`You can choose up to ${MAX_FRUITS} fruits for your subscription bowl.`);
+    if (!canAddMoreFruits) {
+      toast({
+        title: "Maximum fruits reached",
+        description: `You can only select ${REQUIRED_FRUITS} different fruits.`,
+        variant: "destructive"
+      });
       return;
     }
+    
+    // Check if already selected
+    if (isInBowl(fruit.id)) {
+      toast({
+        title: "Fruit already selected",
+        description: "Please choose a different fruit.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     addToCart({
       id: `fruit-${fruit.id}`,
       name: fruit.name,
@@ -46,20 +53,21 @@ const BowlBuilderScreen = () => {
     return bowlItems.some(item => item.id === `fruit-${fruitId}`);
   };
 
-  const getItemQuantity = (fruitId: number): number => {
-    const item = bowlItems.find(item => item.id === `fruit-${fruitId}`);
-    return item?.quantity || 0;
-  };
-
   const handleProceedToCart = () => {
-    if (bowlItems.length === 0) {
-      alert('Please add at least one fruit to your bowl');
+    if (selectedCount !== REQUIRED_FRUITS) {
+      toast({
+        title: "Please select exactly 6 different fruits",
+        description: `You have selected ${selectedCount} fruits. Please select ${REQUIRED_FRUITS - selectedCount} more.`,
+        variant: "destructive"
+      });
       return;
     }
     navigate('/cart');
   };
 
-  const orderPrice = getOrderPrice();
+  const handleClearBowl = () => {
+    clearCart();
+  };
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -75,7 +83,7 @@ const BowlBuilderScreen = () => {
           <div className="flex-1">
             <h1 className="text-xl font-bold text-foreground">Build Your Bowl</h1>
             <p className="text-sm text-muted-foreground">
-              {isSubscriptionMode ? 'Weekly Subscription • Choose up to 5 fruits' : 'One-time Order'}
+              One-time Order • Select exactly {REQUIRED_FRUITS} fruits
             </p>
           </div>
         </div>
@@ -90,20 +98,33 @@ const BowlBuilderScreen = () => {
         />
 
         {/* Current Bowl Summary */}
-        {bowlItems.length > 0 && (
-          <div className="mt-3 bg-card rounded-xl p-3 shadow-fruit">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-foreground text-sm">Your Bowl</h3>
-              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-                {bowlItems.length} {bowlItems.length === 1 ? 'fruit' : 'fruits'}
+        <div className="mt-3 bg-card rounded-xl p-3 shadow-fruit">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-foreground text-sm">Your Bowl</h3>
+            <div className="flex items-center gap-2">
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                selectedCount === REQUIRED_FRUITS 
+                  ? 'bg-primary/20 text-primary' 
+                  : 'bg-destructive/20 text-destructive'
+              }`}>
+                {selectedCount}/{REQUIRED_FRUITS} fruits
               </span>
+              {bowlItems.length > 0 && (
+                <button
+                  onClick={handleClearBowl}
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Clear
+                </button>
+              )}
             </div>
+          </div>
+          {bowlItems.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {bowlItems.map((item) => (
                 <div key={item.id} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-xs">
                   <img src={item.image} alt={item.name} className="w-4 h-4 rounded-full object-cover" />
                   <span>{item.name}</span>
-                  <span className="font-semibold">×{item.quantity}</span>
                   <button
                     onClick={() => removeFromCart(item.id)}
                     className="ml-1 text-muted-foreground hover:text-destructive"
@@ -113,24 +134,33 @@ const BowlBuilderScreen = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">No fruits selected yet</p>
+          )}
+          
+          {selectedCount !== REQUIRED_FRUITS && selectedCount > 0 && (
+            <p className="text-xs text-destructive mt-2">
+              Please select exactly 6 different fruits
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Fruits Selection */}
       <div className="p-4">
         <h2 className="text-lg font-bold text-foreground mb-3">
-          {isSubscriptionMode ? 'Select Your Fruits (Max 5)' : 'Add Fruits to Your Bowl'}
+          Select Your Fruits ({REQUIRED_FRUITS - selectedCount} more needed)
         </h2>
         <div className="space-y-3">
           {fruits.map((fruit) => {
             const inBowl = isInBowl(fruit.id);
-            const quantity = getItemQuantity(fruit.id);
             
             return (
               <div
                 key={fruit.id}
-                className="bg-card rounded-xl p-3 shadow-fruit flex items-center gap-3"
+                className={`bg-card rounded-xl p-3 shadow-fruit flex items-center gap-3 ${
+                  inBowl ? 'ring-2 ring-primary' : ''
+                }`}
               >
                 <img
                   src={fruit.image}
@@ -139,25 +169,25 @@ const BowlBuilderScreen = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-foreground">{fruit.name}</h3>
-                  <p className="text-primary font-bold text-sm">₹{fruit.price}</p>
+                  <p className="text-muted-foreground text-sm">{fruit.description}</p>
                   {fruit.seasonal && (
                     <span className="text-xs text-tropical">Seasonal</span>
                   )}
                 </div>
                 
                 {inBowl ? (
-                  <QuantitySelector
-                    quantity={quantity}
-                    onIncrease={() => updateQuantity(`fruit-${fruit.id}`, quantity + 1)}
-                    onDecrease={() => updateQuantity(`fruit-${fruit.id}`, quantity - 1)}
-                    max={isSubscriptionMode ? 1 : 10}
-                  />
+                  <button
+                    onClick={() => removeFromCart(`fruit-${fruit.id}`)}
+                    className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground"
+                  >
+                    <Check className="w-5 h-5" />
+                  </button>
                 ) : (
                   <Button
-                    variant={canAddMoreFruits || !isSubscriptionMode ? 'default' : 'ghost'}
+                    variant={canAddMoreFruits ? 'default' : 'ghost'}
                     size="icon"
                     onClick={() => handleAddFruit(fruit)}
-                    disabled={isSubscriptionMode && !canAddMoreFruits}
+                    disabled={!canAddMoreFruits}
                   >
                     <Plus className="w-5 h-5" />
                   </Button>
@@ -172,16 +202,14 @@ const BowlBuilderScreen = () => {
       <div className="fixed bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-card border-t border-border p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm text-muted-foreground">
-              {isSubscriptionMode ? 'Weekly Price' : 'Bowl Price'}
-            </p>
-            <p className="text-2xl font-bold text-primary">₹{orderPrice}</p>
+            <p className="text-sm text-muted-foreground">Bowl Price (Fixed)</p>
+            <p className="text-2xl font-bold text-primary">₹{ONE_TIME_BOWL_PRICE}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">{getTotalItems()} items</p>
-            <p className="text-sm text-primary font-medium">
-              {isSubscriptionMode ? 'Delivery included' : 'Free delivery'}
+            <p className={`text-sm ${selectedCount === REQUIRED_FRUITS ? 'text-primary' : 'text-destructive'}`}>
+              {selectedCount}/{REQUIRED_FRUITS} fruits selected
             </p>
+            <p className="text-sm text-primary font-medium">Free delivery</p>
           </div>
         </div>
         <Button
@@ -189,10 +217,10 @@ const BowlBuilderScreen = () => {
           size="lg"
           fullWidth
           onClick={handleProceedToCart}
-          disabled={bowlItems.length === 0}
+          disabled={selectedCount !== REQUIRED_FRUITS}
         >
           <ShoppingCart className="w-5 h-5" />
-          Proceed to Cart
+          {selectedCount === REQUIRED_FRUITS ? 'Proceed to Cart' : `Select ${REQUIRED_FRUITS - selectedCount} more fruits`}
         </Button>
       </div>
     </div>

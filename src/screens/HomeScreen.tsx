@@ -4,6 +4,7 @@ import { fruits, popularBowls } from '@/data/dummyData';
 import FruitCard from '@/components/FruitCard';
 import { Button } from '@/components/ui/button';
 import { MapPin, ChevronRight } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
@@ -24,10 +25,15 @@ const HomeScreen = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/20 to-secondary/30 p-5 pt-8">
-        <h1 className="text-2xl font-bold text-foreground">
-          {greeting}, {user?.name || 'User'} 👋
-        </h1>
-        <p className="text-muted-foreground mt-1">What would you like today?</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">
+              {greeting}, {user?.name || 'User'} 👋
+            </h1>
+            <p className="text-muted-foreground mt-1">What would you like today?</p>
+          </div>
+          <img src={logo} alt="ABC Logo" className="w-12 h-12 object-contain" />
+        </div>
       </div>
 
       <div className="p-4 space-y-6">
@@ -46,8 +52,8 @@ const HomeScreen = () => {
         {/* Subscription Banner */}
         <div className="bg-gradient-tropical rounded-xl p-5 relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-xl font-bold text-foreground">Weekly Subscription - ₹300</h2>
-            <p className="text-sm text-foreground/80 mt-1">Get fresh bowls delivered 6 days a week. Pay once per week.</p>
+            <h2 className="text-xl font-bold text-foreground">Weekly Subscription - ₹249</h2>
+            <p className="text-sm text-foreground/80 mt-1">Get fresh bowls delivered 6 days a week. Predefined menu!</p>
             <Button
               variant="secondary"
               size="sm"
@@ -70,15 +76,15 @@ const HomeScreen = () => {
             >
               <span className="text-4xl block mb-2">🍓</span>
               <h3 className="font-semibold text-foreground">One-time Bowl</h3>
-              <p className="text-xs text-muted-foreground mt-1">Order a bowl just for today</p>
+              <p className="text-xs text-muted-foreground mt-1">Select 6 fruits • ₹50</p>
             </div>
             <div
               className="bg-card rounded-xl p-4 shadow-fruit cursor-pointer hover:shadow-fruit-lg transition-all active:scale-[0.98]"
-              onClick={() => navigate('/bowl-builder?subscription=true')}
+              onClick={() => navigate('/subscription')}
             >
               <span className="text-4xl block mb-2">📅</span>
               <h3 className="font-semibold text-foreground">Weekly Subscription</h3>
-              <p className="text-xs text-muted-foreground mt-1">Get bowls delivered 6 days a week</p>
+              <p className="text-xs text-muted-foreground mt-1">Predefined menu • ₹249/week</p>
             </div>
           </div>
         </section>
@@ -129,7 +135,7 @@ const HomeScreen = () => {
                 <span className="text-4xl block text-center mb-2">{bowl.emoji}</span>
                 <h3 className="font-semibold text-foreground text-sm text-center">{bowl.name}</h3>
                 <p className="text-xs text-muted-foreground text-center mt-1">{bowl.fruits.join(', ')}</p>
-                <p className="text-primary font-bold text-center mt-2">₹{bowl.price}</p>
+                <p className="text-primary font-bold text-center mt-2">₹50</p>
               </div>
             ))}
           </div>
@@ -161,7 +167,7 @@ const HomeScreen = () => {
           onClick={() => navigate('/bowl-builder')}
           className="mt-4"
         >
-          🍎 Build Your Own Bowl
+          🍎 Build Your Own Bowl - ₹50
         </Button>
       </div>
     </div>

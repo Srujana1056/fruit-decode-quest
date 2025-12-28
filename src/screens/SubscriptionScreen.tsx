@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
+import { weeklyMenu } from '@/data/dummyData';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Calendar } from 'lucide-react';
 
 const SubscriptionScreen = () => {
   const navigate = useNavigate();
@@ -11,14 +12,13 @@ const SubscriptionScreen = () => {
     { emoji: '🍓', text: 'Fresh fruits delivered 6 days a week' },
     { emoji: '💰', text: 'Save more compared to one-time orders' },
     { emoji: '🚚', text: 'Free delivery on all orders' },
-    { emoji: '🔄', text: 'Customize your bowl anytime' },
-    { emoji: '⏸️', text: 'Pause or cancel anytime' },
+    { emoji: '📅', text: 'Predefined menu - no customization needed' },
     { emoji: '📱', text: 'Easy order tracking' }
   ];
 
   const handleSubscribe = () => {
     setIsSubscription(true);
-    navigate('/bowl-builder?subscription=true');
+    navigate('/checkout?subscription=true');
   };
 
   const handleOneTime = () => {
@@ -47,7 +47,7 @@ const SubscriptionScreen = () => {
           <div className="bg-card rounded-xl p-4 shadow-fruit border-2 border-transparent">
             <h3 className="font-semibold text-foreground text-sm mb-1">One-time Order</h3>
             <p className="text-3xl font-bold text-foreground">₹{ONE_TIME_BOWL_PRICE}</p>
-            <p className="text-xs text-muted-foreground mt-1">per bowl</p>
+            <p className="text-xs text-muted-foreground mt-1">per bowl (6 fruits)</p>
           </div>
           <div className="bg-card rounded-xl p-4 shadow-fruit-lg border-2 border-primary relative">
             <span className="absolute -top-2 right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full">
@@ -56,6 +56,32 @@ const SubscriptionScreen = () => {
             <h3 className="font-semibold text-primary text-sm mb-1">Weekly Plan</h3>
             <p className="text-3xl font-bold text-primary">₹{WEEKLY_SUBSCRIPTION_PRICE}</p>
             <p className="text-xs text-muted-foreground mt-1">per week (6 bowls)</p>
+          </div>
+        </div>
+
+        {/* Weekly Menu */}
+        <div className="bg-card rounded-xl p-5 shadow-fruit">
+          <div className="flex items-center gap-2 mb-4">
+            <Calendar className="w-5 h-5 text-primary" />
+            <h3 className="font-bold text-foreground text-lg">Weekly Menu</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Our chef curates a fresh menu for you every week. No customization needed!
+          </p>
+          <div className="space-y-3">
+            {weeklyMenu.map((day) => (
+              <div key={day.day} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold flex-shrink-0">
+                  {day.day}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-foreground text-sm">{day.dayName}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {day.fruits.join(' • ')}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -77,9 +103,9 @@ const SubscriptionScreen = () => {
           <h3 className="font-bold text-foreground text-lg mb-4">How it works</h3>
           <div className="space-y-4">
             {[
-              { step: '1', title: 'Build your bowl', desc: 'Choose up to 5 fruits' },
-              { step: '2', title: 'Set delivery days', desc: 'Pick 6 days for delivery' },
-              { step: '3', title: 'Enjoy fresh fruits', desc: 'Get bowls at your doorstep' }
+              { step: '1', title: 'Subscribe', desc: 'Choose weekly subscription' },
+              { step: '2', title: 'We prepare', desc: 'Fresh bowls from our menu' },
+              { step: '3', title: 'Enjoy daily', desc: '6 days of fresh fruits' }
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
@@ -111,7 +137,7 @@ const SubscriptionScreen = () => {
           fullWidth
           onClick={handleOneTime}
         >
-          Order One-time Instead
+          Order One-time Instead (₹{ONE_TIME_BOWL_PRICE})
         </Button>
       </div>
     </div>

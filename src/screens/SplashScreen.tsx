@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import logo from '@/assets/logo.png';
 
 const SplashScreen = () => {
   const fruits = ['🍓', '🫐', '🍌', '🍎', '🍊', '🥭', '🍍', '🍇', '🥝', '🍉', '🍑', '🍒'];
@@ -31,13 +32,10 @@ const SplashScreen = () => {
       {/* Main Content */}
       <div className={`relative z-10 text-center transition-all duration-700 ${show ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
         <div className="mb-6 animate-bounce-gentle">
-          <span className="text-8xl drop-shadow-lg">🍎</span>
+          <img src={logo} alt="ABC Logo" className="w-48 h-48 mx-auto drop-shadow-lg object-contain" />
         </div>
-        <h1 className="text-4xl font-extrabold text-foreground mb-2 tracking-tight">
-          FruitBowl
-        </h1>
         <p className="text-lg text-muted-foreground font-medium">
-          A box full of calories
+          A bowl full of calories
         </p>
       </div>
 

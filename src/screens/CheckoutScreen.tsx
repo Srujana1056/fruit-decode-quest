@@ -1,20 +1,27 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import PriceSummary from '@/components/PriceSummary';
+import { weeklyMenu } from '@/data/dummyData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, MapPin, CreditCard, Wallet, Banknote } from 'lucide-react';
+import { ArrowLeft, MapPin, CreditCard, Wallet, Banknote, Calendar } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const CheckoutScreen = () => {
   const navigate = useNavigate();
-  const { cart, isSubscription, getOrderPrice, clearCart } = useCart();
+  const [searchParams] = useSearchParams();
+  const isSubscriptionCheckout = searchParams.get('subscription') === 'true';
+  const { cart, isSubscription, getOrderPrice, clearCart, WEEKLY_SUBSCRIPTION_PRICE, ONE_TIME_BOWL_PRICE, setIsSubscription } = useCart();
   const { user } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Set subscription mode if coming from subscription flow
+  if (isSubscriptionCheckout && !isSubscription) {
+    setIsSubscription(true);
+  }
 
   const [address, setAddress] = useState({
     name: user?.name || '',
@@ -24,7 +31,8 @@ const CheckoutScreen = () => {
     pincode: '400001'
   });
 
-  const orderPrice = getOrderPrice();
+  const orderPrice = isSubscriptionCheckout ? WEEKLY_SUBSCRIPTION_PRICE : getOrderPrice();
+  const bowlItems = cart.filter(item => item.type === 'fruit');
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
@@ -35,7 +43,7 @@ const CheckoutScreen = () => {
     clearCart();
     toast({
       title: "Order Placed! 🎉",
-      description: isSubscription 
+      description: isSubscriptionCheckout 
         ? "Your weekly subscription has been activated!" 
         : "Your fruit bowl is being prepared!",
     });
@@ -61,11 +69,75 @@ const CheckoutScreen = () => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold text-foreground">Checkout</h1>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Checkout</h1>
+            <p className="text-sm text-muted-foreground">
+              {isSubscriptionCheckout ? 'Weekly Subscription' : 'One-Time Order'}
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="p-4 space-y-4">
+        {/* Order Summary */}
+        {isSubscriptionCheckout ? (
+          <div className="bg-card rounded-xl p-4 shadow-fruit">
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Subscription Summary</h3>
+            </div>
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Plan</span>
+                <span className="text-foreground font-medium">Weekly Subscription</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Duration</span>
+                <span className="text-foreground">6 days per week</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Menu</span>
+                <span className="text-foreground">Predefined by chef</span>
+              </div>
+            </div>
+            
+            {/* Weekly Menu Preview */}
+            <div className="bg-muted rounded-lg p-3">
+              <h4 className="font-medium text-foreground text-sm mb-2">This Week's Menu</h4>
+              <div className="space-y-1">
+                {weeklyMenu.slice(0, 3).map((day) => (
+                  <p key={day.day} className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">{day.dayName}:</span> {day.fruits.join(', ')}
+                  </p>
+                ))}
+                <p className="text-xs text-primary">+ 3 more days...</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-card rounded-xl p-4 shadow-fruit">
+            <h3 className="font-semibold text-foreground mb-3">Order Summary</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">One-Time Fruit Bowl</span>
+                <span className="text-foreground">₹{ONE_TIME_BOWL_PRICE}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Fruits Selected</span>
+                <span className="text-foreground">{bowlItems.length}</span>
+              </div>
+              {bowlItems.length > 0 && (
+                <div className="pt-2">
+                  <p className="text-xs text-muted-foreground mb-1">Selected fruits:</p>
+                  <p className="text-sm text-foreground">
+                    {bowlItems.map(item => item.name).join(', ')}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Delivery Address */}
         <div className="bg-card rounded-xl p-4 shadow-fruit">
           <div className="flex items-center gap-2 mb-4">
@@ -154,8 +226,31 @@ const CheckoutScreen = () => {
           </div>
         </div>
 
-        {/* Order Summary */}
-        <PriceSummary orderPrice={orderPrice} isSubscription={isSubscription} />
+        {/* Price Summary */}
+        <div className="bg-card rounded-xl p-4 shadow-fruit">
+          <h3 className="font-semibold text-foreground mb-3">Price Summary</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">
+                {isSubscriptionCheckout ? 'Weekly Subscription' : 'One-Time Bowl'}
+              </span>
+              <span className="text-foreground">₹{orderPrice}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Delivery</span>
+              <span className="text-primary">Free</span>
+            </div>
+            <div className="border-t border-border pt-2 mt-2">
+              <div className="flex justify-between font-bold">
+                <span className="text-foreground">Total</span>
+                <span className="text-primary">₹{orderPrice}</span>
+              </div>
+              {isSubscriptionCheckout && (
+                <p className="text-xs text-muted-foreground mt-1">per week</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Fixed Bottom Bar */}
@@ -165,14 +260,14 @@ const CheckoutScreen = () => {
             <p className="text-sm text-muted-foreground">Total</p>
             <p className="text-2xl font-bold text-primary">₹{orderPrice}</p>
           </div>
-          {isSubscription && <span className="text-sm text-muted-foreground">per week</span>}
+          {isSubscriptionCheckout && <span className="text-sm text-muted-foreground">per week</span>}
         </div>
         <Button
           variant="fruit"
           size="lg"
           fullWidth
           onClick={handlePlaceOrder}
-          disabled={isProcessing}
+          disabled={isProcessing || (!isSubscriptionCheckout && bowlItems.length === 0)}
         >
           {isProcessing ? 'Processing...' : `Pay ₹${orderPrice}`}
         </Button>

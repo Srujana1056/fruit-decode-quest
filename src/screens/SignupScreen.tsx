@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const SignupScreen = () => {
   const navigate = useNavigate();
@@ -42,9 +43,9 @@ const SignupScreen = () => {
       {/* Header */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="mb-8 text-center animate-fade-in">
-          <span className="text-7xl mb-4 block animate-bounce-gentle">🍓</span>
+          <img src={logo} alt="ABC Logo" className="w-32 h-32 mx-auto mb-4 animate-bounce-gentle object-contain" />
           <h1 className="text-3xl font-extrabold text-foreground">Create Account</h1>
-          <p className="text-muted-foreground mt-2">Join FruitBowl today</p>
+          <p className="text-muted-foreground mt-2">Join ABC today</p>
         </div>
 
         {/* Form */}
