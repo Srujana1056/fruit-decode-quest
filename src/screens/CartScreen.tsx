@@ -1,13 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
-import QuantitySelector from '@/components/QuantitySelector';
-import PriceSummary from '@/components/PriceSummary';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 
 const CartScreen = () => {
   const navigate = useNavigate();
-  const { cart, updateQuantity, removeFromCart, isSubscription, setIsSubscription, getOrderPrice, clearCart } = useCart();
+  const { cart, removeFromCart, isSubscription, getOrderPrice, clearCart, REQUIRED_FRUITS, ONE_TIME_BOWL_PRICE } = useCart();
 
   const handleProceedToCheckout = () => {
     if (cart.length === 0) {
@@ -56,7 +54,9 @@ const CartScreen = () => {
           </button>
           <div className="flex-1">
             <h1 className="text-xl font-bold text-foreground">Your Cart</h1>
-            <p className="text-sm text-muted-foreground">{cart.length} {cart.length === 1 ? 'item' : 'items'}</p>
+            <p className="text-sm text-muted-foreground">
+              {isSubscription ? 'Weekly Subscription' : 'One-Time Order'}
+            </p>
           </div>
           <button
             onClick={clearCart}
@@ -71,13 +71,13 @@ const CartScreen = () => {
         {/* Bowl Summary */}
         <div className="bg-card rounded-xl p-4 shadow-fruit">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-foreground">Your Fruit Bowl</h3>
+            <h3 className="font-semibold text-foreground">One-Time Fruit Bowl</h3>
             <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
               {bowlItems.length} {bowlItems.length === 1 ? 'fruit' : 'fruits'}
             </span>
           </div>
           
-          {/* Fruit Items */}
+          {/* Fruit Items - Display only */}
           <div className="space-y-3">
             {bowlItems.map((item) => (
               <div key={item.id} className="flex items-center gap-3">
@@ -88,52 +88,59 @@ const CartScreen = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-foreground">{item.name}</h4>
-                  <p className="text-sm text-muted-foreground">₹{item.price}</p>
+                  <p className="text-sm text-muted-foreground">Fixed portion</p>
                 </div>
-                <QuantitySelector
-                  quantity={item.quantity}
-                  onIncrease={() => updateQuantity(item.id, item.quantity + 1)}
-                  onDecrease={() => updateQuantity(item.id, item.quantity - 1)}
-                />
+                <button
+                  onClick={() => removeFromCart(item.id)}
+                  className="text-muted-foreground hover:text-destructive p-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Order Type Toggle */}
-        <div className="bg-card rounded-xl p-4 shadow-fruit">
-          <h3 className="font-semibold text-foreground mb-3">Order Type</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              className={`p-3 rounded-lg text-sm font-medium transition-all ${
-                !isSubscription
-                  ? 'bg-primary text-primary-foreground shadow-fruit'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-              onClick={() => setIsSubscription(false)}
-            >
-              One-time (₹250)
-            </button>
-            <button
-              className={`p-3 rounded-lg text-sm font-medium transition-all ${
-                isSubscription
-                  ? 'bg-primary text-primary-foreground shadow-fruit'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-              onClick={() => setIsSubscription(true)}
-            >
-              Weekly (₹300/wk)
-            </button>
-          </div>
-          {isSubscription && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Includes 6 days delivery per week. Free delivery!
-            </p>
+          {bowlItems.length !== REQUIRED_FRUITS && (
+            <div className="mt-3 p-3 bg-destructive/10 rounded-lg">
+              <p className="text-sm text-destructive">
+                Please select exactly {REQUIRED_FRUITS} different fruits. You have {bowlItems.length}.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => navigate('/bowl-builder')}
+              >
+                Edit Bowl
+              </Button>
+            </div>
           )}
         </div>
 
         {/* Price Summary */}
-        <PriceSummary orderPrice={orderPrice} isSubscription={isSubscription} />
+        <div className="bg-card rounded-xl p-4 shadow-fruit">
+          <h3 className="font-semibold text-foreground mb-3">Price Summary</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">One-Time Fruit Bowl</span>
+              <span className="text-foreground">₹{ONE_TIME_BOWL_PRICE}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Fruits Selected</span>
+              <span className="text-foreground">{bowlItems.length}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Delivery</span>
+              <span className="text-primary">Free</span>
+            </div>
+            <div className="border-t border-border pt-2 mt-2">
+              <div className="flex justify-between font-bold">
+                <span className="text-foreground">Total</span>
+                <span className="text-primary">₹{orderPrice}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Fixed Bottom Bar */}
@@ -143,15 +150,15 @@ const CartScreen = () => {
             <p className="text-sm text-muted-foreground">Total</p>
             <p className="text-2xl font-bold text-primary">₹{orderPrice}</p>
           </div>
-          {isSubscription && <span className="text-sm text-muted-foreground">per week</span>}
         </div>
         <Button
           variant="fruit"
           size="lg"
           fullWidth
           onClick={handleProceedToCheckout}
+          disabled={bowlItems.length !== REQUIRED_FRUITS}
         >
-          Proceed to Checkout
+          {bowlItems.length === REQUIRED_FRUITS ? 'Proceed to Checkout' : `Select ${REQUIRED_FRUITS} fruits first`}
         </Button>
       </div>
     </div>

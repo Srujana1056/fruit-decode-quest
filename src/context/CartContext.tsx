@@ -20,8 +20,10 @@ interface CartContextType {
   getOrderPrice: () => number;
   getTotalPrice: () => number;
   getTotalItems: () => number;
+  getSelectedFruitsCount: () => number;
   ONE_TIME_BOWL_PRICE: number;
   WEEKLY_SUBSCRIPTION_PRICE: number;
+  REQUIRED_FRUITS: number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -43,18 +45,18 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const [isSubscription, setIsSubscription] = useState(false);
 
   // Fixed pricing constants
-  const ONE_TIME_BOWL_PRICE = 250;
-  const WEEKLY_SUBSCRIPTION_PRICE = 300;
+  const ONE_TIME_BOWL_PRICE = 50;
+  const WEEKLY_SUBSCRIPTION_PRICE = 249;
+  const REQUIRED_FRUITS = 6;
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
-        return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
-        );
+        // For one-time orders, don't allow duplicate fruits
+        return prev;
       }
-      return [...prev, item];
+      return [...prev, { ...item, quantity: 1 }];
     });
   };
 
@@ -63,8 +65,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       removeFromCart(id);
       return;
     }
+    // For one-time orders, quantity is always 1
     setCart((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      prev.map((item) => (item.id === id ? { ...item, quantity: 1 } : item))
     );
   };
 
@@ -84,11 +87,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    return getOrderPrice();
   };
 
   const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cart.filter(item => item.type === 'fruit').length;
+  };
+
+  const getSelectedFruitsCount = () => {
+    return cart.filter(item => item.type === 'fruit').length;
   };
 
   return (
@@ -104,8 +111,10 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         getOrderPrice,
         getTotalPrice,
         getTotalItems,
+        getSelectedFruitsCount,
         ONE_TIME_BOWL_PRICE,
-        WEEKLY_SUBSCRIPTION_PRICE
+        WEEKLY_SUBSCRIPTION_PRICE,
+        REQUIRED_FRUITS
       }}
     >
       {children}

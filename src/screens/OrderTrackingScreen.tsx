@@ -98,7 +98,7 @@ const OrderTrackingScreen = () => {
           </Button>
         </div>
 
-        {/* Actions */}
+        {/* Actions - Removed Cancel Subscription */}
         <div className="space-y-3">
           <Button
             variant="fruit"
