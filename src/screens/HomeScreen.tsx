@@ -4,7 +4,6 @@ import { fruits, popularBowls } from '@/data/dummyData';
 import FruitCard from '@/components/FruitCard';
 import { Button } from '@/components/ui/button';
 import { MapPin, ChevronRight } from 'lucide-react';
-import logo from '@/assets/logo.png';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
@@ -25,14 +24,11 @@ const HomeScreen = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/20 to-secondary/30 p-5 pt-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              {greeting}, {user?.name || 'User'} 👋
-            </h1>
-            <p className="text-muted-foreground mt-1">What would you like today?</p>
-          </div>
-          <img src={logo} alt="ABC Logo" className="w-12 h-12 object-contain" />
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            {greeting}, {user?.name || 'User'} 👋
+          </h1>
+          <p className="text-muted-foreground mt-1">What would you like today?</p>
         </div>
       </div>
 
@@ -114,32 +110,6 @@ const HomeScreen = () => {
           </div>
         </section>
 
-        {/* Popular Bowls */}
-        <section>
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-lg font-bold text-foreground">Popular Bowls</h2>
-            <button
-              className="text-primary text-sm font-semibold flex items-center gap-1"
-              onClick={() => navigate('/catalog')}
-            >
-              See All <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {popularBowls.map((bowl) => (
-              <div
-                key={bowl.id}
-                className="bg-card rounded-xl p-3 shadow-fruit cursor-pointer hover:shadow-fruit-lg transition-all active:scale-[0.98]"
-                onClick={() => navigate('/bowl-builder')}
-              >
-                <span className="text-4xl block text-center mb-2">{bowl.emoji}</span>
-                <h3 className="font-semibold text-foreground text-sm text-center">{bowl.name}</h3>
-                <p className="text-xs text-muted-foreground text-center mt-1">{bowl.fruits.join(', ')}</p>
-                <p className="text-primary font-bold text-center mt-2">₹50</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Fresh Fruits */}
         <section>
@@ -154,7 +124,7 @@ const HomeScreen = () => {
           </div>
           <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
             {featuredFruits.map((fruit) => (
-              <FruitCard key={fruit.id} fruit={fruit} />
+              <FruitCard key={fruit.id} fruit={fruit} showPrice={false} />
             ))}
           </div>
         </section>

@@ -70,9 +70,9 @@ const BowlBuilderScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary/20 to-secondary/30 p-4 pt-6 sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      {/* Header - Sticky */}
+      <div className="bg-gradient-to-r from-primary/20 to-secondary/30 p-4 pt-6 sticky top-0 z-20 backdrop-blur-sm bg-opacity-95">
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={() => navigate(-1)}
@@ -147,7 +147,7 @@ const BowlBuilderScreen = () => {
       </div>
 
       {/* Fruits Selection */}
-      <div className="p-4">
+      <div className="p-4 pb-48">
         <h2 className="text-lg font-bold text-foreground mb-3">
           Select Your Fruits ({REQUIRED_FRUITS - selectedCount} more needed)
         </h2>

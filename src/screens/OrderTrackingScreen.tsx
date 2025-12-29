@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Check, Clock, Truck, Package } from 'lucide-react';
+import logo from '@/assets/logo-transparent.png';
 
 const OrderTrackingScreen = () => {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ const OrderTrackingScreen = () => {
       <div className="p-4 space-y-6">
         {/* Success Animation */}
         <div className="bg-card rounded-xl p-6 shadow-fruit text-center">
-          <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
-            <span className="text-5xl">🍎</span>
+          <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-gentle overflow-hidden">
+            <img src={logo} alt="ABC Logo" className="w-16 h-16 object-contain" />
           </div>
           <h2 className="text-xl font-bold text-foreground mb-2">Order Placed Successfully!</h2>
           <p className="text-muted-foreground">Your fresh fruit bowl is on its way</p>

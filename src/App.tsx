@@ -34,7 +34,7 @@ const AppRoutes = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2500);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
