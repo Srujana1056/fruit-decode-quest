@@ -39,7 +39,7 @@ const FruitCard = ({ fruit, showPrice = true, onClick }: FruitCardProps) => {
       <div className="p-3">
         <h3 className="font-semibold text-foreground truncate">{fruit.name}</h3>
         {showPrice && (
-          <p className="text-primary font-bold text-sm mt-0.5">₹{fruit.price}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{fruit.nutrition.calories} cal</p>
         )}
       </div>
     </div>

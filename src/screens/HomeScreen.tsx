@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { fruits, popularBowls } from '@/data/dummyData';
+import { getTodaysFreshFruits } from '@/data/dummyData';
 import FruitCard from '@/components/FruitCard';
 import { Button } from '@/components/ui/button';
 import { MapPin, ChevronRight } from 'lucide-react';
@@ -11,14 +11,16 @@ const HomeScreen = () => {
   const timeOfDay = new Date().getHours();
   const greeting = timeOfDay < 12 ? 'Good morning' : timeOfDay < 18 ? 'Good afternoon' : 'Good evening';
 
-  const categoryList = ['Berries', 'Tropical', 'Citrus', 'Stone'];
+  const categoryList = ['Berries', 'Tropical', 'Citrus', 'Melons'];
   const categoryEmojis: Record<string, string> = {
     Berries: '🫐',
     Tropical: '🥭',
     Citrus: '🍊',
-    Stone: '🍑'
+    Melons: '🍉'
   };
-  const featuredFruits = fruits.slice(0, 6);
+  
+  // Get today's fresh fruits (admin controlled)
+  const todaysFruits = getTodaysFreshFruits().slice(0, 6);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -48,7 +50,7 @@ const HomeScreen = () => {
         {/* Subscription Banner */}
         <div className="bg-gradient-tropical rounded-xl p-5 relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-xl font-bold text-foreground">Weekly Subscription - ₹249</h2>
+            <h2 className="text-xl font-bold text-foreground">Weekly Subscription - ₹250</h2>
             <p className="text-sm text-foreground/80 mt-1">Get fresh bowls delivered 6 days a week. Predefined menu!</p>
             <Button
               variant="secondary"
@@ -80,7 +82,7 @@ const HomeScreen = () => {
             >
               <span className="text-4xl block mb-2">📅</span>
               <h3 className="font-semibold text-foreground">Weekly Subscription</h3>
-              <p className="text-xs text-muted-foreground mt-1">Predefined menu • ₹249/week</p>
+              <p className="text-xs text-muted-foreground mt-1">Predefined menu • ₹250/week</p>
             </div>
           </div>
         </section>
@@ -110,11 +112,10 @@ const HomeScreen = () => {
           </div>
         </section>
 
-
-        {/* Fresh Fruits */}
+        {/* Today's Fresh Fruits */}
         <section>
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-lg font-bold text-foreground">Fresh Fruits</h2>
+            <h2 className="text-lg font-bold text-foreground">Today's Fresh Fruits</h2>
             <button
               className="text-primary text-sm font-semibold flex items-center gap-1"
               onClick={() => navigate('/catalog')}
@@ -123,7 +124,7 @@ const HomeScreen = () => {
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
-            {featuredFruits.map((fruit) => (
+            {todaysFruits.map((fruit) => (
               <FruitCard key={fruit.id} fruit={fruit} showPrice={false} />
             ))}
           </div>

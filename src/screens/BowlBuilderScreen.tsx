@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fruits } from '@/data/dummyData';
+import { getTodaysFreshFruits } from '@/data/dummyData';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Check, ShoppingCart } from 'lucide-react';
@@ -14,12 +14,15 @@ const BowlBuilderScreen = () => {
   // Always one-time mode for bowl builder
   setIsSubscription(false);
 
+  // Get today's fresh fruits only (admin controlled)
+  const todaysFruits = getTodaysFreshFruits();
+
   // Get fruits that are in the cart
   const bowlItems = cart.filter(item => item.type === 'fruit');
   const selectedCount = getSelectedFruitsCount();
   const canAddMoreFruits = selectedCount < REQUIRED_FRUITS;
 
-  const handleAddFruit = (fruit: typeof fruits[0]) => {
+  const handleAddFruit = (fruit: typeof todaysFruits[0]) => {
     if (!canAddMoreFruits) {
       toast({
         title: "Maximum fruits reached",
@@ -42,7 +45,7 @@ const BowlBuilderScreen = () => {
     addToCart({
       id: `fruit-${fruit.id}`,
       name: fruit.name,
-      price: fruit.price,
+      price: 0, // No per-fruit pricing
       quantity: 1,
       image: fruit.image,
       type: 'fruit'
@@ -83,22 +86,20 @@ const BowlBuilderScreen = () => {
           <div className="flex-1">
             <h1 className="text-xl font-bold text-foreground">Build Your Bowl</h1>
             <p className="text-sm text-muted-foreground">
-              One-time Order • Select exactly {REQUIRED_FRUITS} fruits
+              Choose exactly {REQUIRED_FRUITS} different fruits
             </p>
           </div>
         </div>
 
-        {/* Bowl Name Input */}
-        <input
-          type="text"
-          placeholder="Name your bowl (optional)"
-          value={bowlName}
-          onChange={(e) => setBowlName(e.target.value)}
-          className="w-full bg-card rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground border border-border outline-none focus:ring-2 focus:ring-primary"
-        />
+        {/* Instruction Banner */}
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-3">
+          <p className="text-sm text-primary font-medium text-center">
+            ✨ Choose exactly 6 different fruits from Today's Fresh Fruits
+          </p>
+        </div>
 
         {/* Current Bowl Summary */}
-        <div className="mt-3 bg-card rounded-xl p-3 shadow-fruit">
+        <div className="bg-card rounded-xl p-3 shadow-fruit">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-foreground text-sm">Your Bowl</h3>
             <div className="flex items-center gap-2">
@@ -146,13 +147,13 @@ const BowlBuilderScreen = () => {
         </div>
       </div>
 
-      {/* Fruits Selection */}
+      {/* Today's Fresh Fruits Selection */}
       <div className="p-4 pb-48">
         <h2 className="text-lg font-bold text-foreground mb-3">
-          Select Your Fruits ({REQUIRED_FRUITS - selectedCount} more needed)
+          Today's Fresh Fruits ({REQUIRED_FRUITS - selectedCount} more needed)
         </h2>
         <div className="space-y-3">
-          {fruits.map((fruit) => {
+          {todaysFruits.map((fruit) => {
             const inBowl = isInBowl(fruit.id);
             
             return (
@@ -169,7 +170,9 @@ const BowlBuilderScreen = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-foreground">{fruit.name}</h3>
-                  <p className="text-muted-foreground text-sm">{fruit.description}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {fruit.nutrition.calories} cal • {fruit.nutrition.vitaminC} Vit C
+                  </p>
                   {fruit.seasonal && (
                     <span className="text-xs text-tropical">Seasonal</span>
                   )}
@@ -202,14 +205,12 @@ const BowlBuilderScreen = () => {
       <div className="fixed bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-card border-t border-border p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm text-muted-foreground">Bowl Price (Fixed)</p>
-            <p className="text-2xl font-bold text-primary">₹{ONE_TIME_BOWL_PRICE}</p>
+            <p className="text-sm text-muted-foreground">One-time Bowl</p>
+            <p className="text-xs text-foreground">Fruits selected: {selectedCount}</p>
           </div>
           <div className="text-right">
-            <p className={`text-sm ${selectedCount === REQUIRED_FRUITS ? 'text-primary' : 'text-destructive'}`}>
-              {selectedCount}/{REQUIRED_FRUITS} fruits selected
-            </p>
-            <p className="text-sm text-primary font-medium">Free delivery</p>
+            <p className="text-2xl font-bold text-primary">₹{ONE_TIME_BOWL_PRICE}</p>
+            <p className="text-xs text-muted-foreground">Fixed price</p>
           </div>
         </div>
         <Button

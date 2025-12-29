@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fruits, categories } from '@/data/dummyData';
-import FruitCard from '@/components/FruitCard';
+import { getTodaysFreshFruits, categories } from '@/data/dummyData';
 import { ArrowLeft } from 'lucide-react';
 
 const FruitCatalogScreen = () => {
@@ -9,7 +8,8 @@ const FruitCatalogScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
 
-  let filteredFruits = [...fruits];
+  // Get today's available fruits only
+  let filteredFruits = [...getTodaysFreshFruits()];
 
   // Filter by category
   if (selectedCategory !== 'all') {
@@ -18,12 +18,8 @@ const FruitCatalogScreen = () => {
     );
   }
 
-  // Sort fruits
-  if (sortBy === 'price-low') {
-    filteredFruits.sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'price-high') {
-    filteredFruits.sort((a, b) => b.price - a.price);
-  } else if (sortBy === 'alphabetical') {
+  // Sort fruits (removed price sorting)
+  if (sortBy === 'alphabetical') {
     filteredFruits.sort((a, b) => a.name.localeCompare(b.name));
   } else if (sortBy === 'seasonal') {
     filteredFruits.sort((a, b) => (b.seasonal ? 1 : 0) - (a.seasonal ? 1 : 0));
@@ -41,8 +37,8 @@ const FruitCatalogScreen = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Fruit Catalog</h1>
-            <p className="text-sm text-muted-foreground">Choose your favorite fruits</p>
+            <h1 className="text-xl font-bold text-foreground">Today's Fresh Fruits</h1>
+            <p className="text-sm text-muted-foreground">Choose exactly 6 different fruits</p>
           </div>
         </div>
 
@@ -64,7 +60,7 @@ const FruitCatalogScreen = () => {
           ))}
         </div>
 
-        {/* Sort Dropdown */}
+        {/* Sort Dropdown - removed price options */}
         <div className="mt-3">
           <select
             value={sortBy}
@@ -72,15 +68,13 @@ const FruitCatalogScreen = () => {
             className="bg-muted text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none w-full"
           >
             <option value="default">Sort by</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
             <option value="alphabetical">A-Z</option>
             <option value="seasonal">Seasonal First</option>
           </select>
         </div>
       </div>
 
-      {/* Fruits Grid */}
+      {/* Fruits Grid - NO PRICES */}
       <div className="p-4">
         <div className="grid grid-cols-2 gap-4">
           {filteredFruits.map((fruit) => (
@@ -104,7 +98,7 @@ const FruitCatalogScreen = () => {
                 </div>
                 <div className="p-3">
                   <h3 className="font-semibold text-foreground truncate">{fruit.name}</h3>
-                  <p className="text-primary font-bold text-sm mt-0.5">₹{fruit.price}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{fruit.nutrition.calories} cal</p>
                 </div>
               </div>
             </div>

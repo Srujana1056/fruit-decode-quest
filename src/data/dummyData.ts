@@ -1,8 +1,7 @@
-// Fruit data - 10 standard fruits
+// Fruit data - 10 standard fruits (Today's Fresh Fruits - admin controlled)
 export interface Fruit {
   id: number;
   name: string;
-  price: number;
   image: string;
   category: string;
   seasonal: boolean;
@@ -10,111 +9,119 @@ export interface Fruit {
   nutrition: {
     calories: number;
     vitaminC: string;
+    fiber: string;
+    vitaminA: string;
   };
+  available: boolean; // Admin controlled - available today
 }
 
 export const fruits: Fruit[] = [
   {
     id: 1,
     name: 'Apple',
-    price: 60,
-    image: 'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=400&fit=crop',
     category: 'Core',
     seasonal: false,
-    description: 'Crisp and refreshing apples, always in season.',
-    nutrition: { calories: 52, vitaminC: '4.6mg' }
+    description: 'Crisp and refreshing red apples, always in season.',
+    nutrition: { calories: 52, vitaminC: '4.6mg', fiber: '2.4g', vitaminA: '54 IU' },
+    available: true
   },
   {
     id: 2,
     name: 'Guava',
-    price: 50,
-    image: 'https://images.pexels.com/photos/5945848/pexels-photo-5945848.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1536511132770-e5058c7e8c46?w=400&h=400&fit=crop',
     category: 'Tropical',
     seasonal: false,
-    description: 'Fresh guavas with a tropical taste.',
-    nutrition: { calories: 68, vitaminC: '228mg' }
+    description: 'Fresh pink guavas with a tropical taste.',
+    nutrition: { calories: 68, vitaminC: '228mg', fiber: '5.4g', vitaminA: '624 IU' },
+    available: true
   },
   {
     id: 3,
     name: 'Mango',
-    price: 90,
-    image: 'https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=400&fit=crop',
     category: 'Tropical',
     seasonal: true,
-    description: 'Sweet and tropical mangoes, a summer favorite.',
-    nutrition: { calories: 60, vitaminC: '36.4mg' }
+    description: 'Sweet and tropical alphonso mangoes.',
+    nutrition: { calories: 60, vitaminC: '36.4mg', fiber: '1.6g', vitaminA: '1082 IU' },
+    available: true
   },
   {
     id: 4,
     name: 'Banana',
-    price: 45,
-    image: 'https://images.pexels.com/photos/2872755/pexels-photo-2872755.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop',
     category: 'Tropical',
     seasonal: false,
     description: 'Ripe and creamy bananas, great for energy.',
-    nutrition: { calories: 89, vitaminC: '8.7mg' }
+    nutrition: { calories: 89, vitaminC: '8.7mg', fiber: '2.6g', vitaminA: '64 IU' },
+    available: true
   },
   {
     id: 5,
     name: 'Papaya',
-    price: 55,
-    image: 'https://images.pexels.com/photos/5945755/pexels-photo-5945755.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?w=400&h=400&fit=crop',
     category: 'Tropical',
     seasonal: false,
-    description: 'Sweet papaya, rich in vitamins.',
-    nutrition: { calories: 43, vitaminC: '60.9mg' }
+    description: 'Sweet orange papaya, rich in vitamins.',
+    nutrition: { calories: 43, vitaminC: '60.9mg', fiber: '1.7g', vitaminA: '950 IU' },
+    available: true
   },
   {
     id: 6,
     name: 'Pineapple',
-    price: 75,
-    image: 'https://images.pexels.com/photos/947879/pexels-photo-947879.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&h=400&fit=crop',
     category: 'Tropical',
     seasonal: true,
     description: 'Tropical pineapple with a perfect balance of sweet and tart.',
-    nutrition: { calories: 50, vitaminC: '47.8mg' }
+    nutrition: { calories: 50, vitaminC: '47.8mg', fiber: '1.4g', vitaminA: '58 IU' },
+    available: true
   },
   {
     id: 7,
-    name: 'Orange',
-    price: 55,
-    image: 'https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-    category: 'Citrus',
+    name: 'Watermelon',
+    image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=400&fit=crop',
+    category: 'Melons',
     seasonal: true,
-    description: 'Juicy oranges bursting with vitamin C.',
-    nutrition: { calories: 47, vitaminC: '53.2mg' }
+    description: 'Refreshing watermelon, perfect for hot days.',
+    nutrition: { calories: 30, vitaminC: '8.1mg', fiber: '0.4g', vitaminA: '569 IU' },
+    available: true
   },
   {
     id: 8,
     name: 'Grapes',
-    price: 70,
-    image: 'https://images.pexels.com/photos/708777/pexels-photo-708777.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400&h=400&fit=crop',
     category: 'Berries',
     seasonal: false,
-    description: 'Sweet and refreshing grapes, perfect for snacking.',
-    nutrition: { calories: 69, vitaminC: '3.2mg' }
+    description: 'Sweet and refreshing green grapes.',
+    nutrition: { calories: 69, vitaminC: '3.2mg', fiber: '0.9g', vitaminA: '66 IU' },
+    available: true
   },
   {
     id: 9,
-    name: 'Chikoo',
-    price: 65,
-    image: 'https://images.pexels.com/photos/6157049/pexels-photo-6157049.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-    category: 'Tropical',
-    seasonal: false,
-    description: 'Sweet and grainy chikoo, a local favorite.',
-    nutrition: { calories: 83, vitaminC: '14.7mg' }
+    name: 'Muskmelon',
+    image: 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=400&h=400&fit=crop',
+    category: 'Melons',
+    seasonal: true,
+    description: 'Sweet and aromatic muskmelon.',
+    nutrition: { calories: 34, vitaminC: '36.7mg', fiber: '0.9g', vitaminA: '3382 IU' },
+    available: true
   },
   {
     id: 10,
-    name: 'Watermelon',
-    price: 40,
-    image: 'https://images.pexels.com/photos/1313267/pexels-photo-1313267.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-    category: 'Melons',
+    name: 'Pomegranate',
+    image: 'https://images.unsplash.com/photo-1541344999736-4a86c8d1d536?w=400&h=400&fit=crop',
+    category: 'Berries',
     seasonal: true,
-    description: 'Refreshing watermelon, perfect for hot days.',
-    nutrition: { calories: 30, vitaminC: '8.1mg' }
+    description: 'Ruby red pomegranate seeds, packed with antioxidants.',
+    nutrition: { calories: 83, vitaminC: '10.2mg', fiber: '4g', vitaminA: '0 IU' },
+    available: true
   }
 ];
+
+// Get today's available fruits (admin controlled)
+export const getTodaysFreshFruits = () => {
+  return fruits.filter(fruit => fruit.available);
+};
 
 export interface Category {
   id: string;
@@ -127,64 +134,48 @@ export const categories: Category[] = [
   { id: 'berries', name: 'Berries', emoji: '🫐' },
   { id: 'tropical', name: 'Tropical', emoji: '🥭' },
   { id: 'citrus', name: 'Citrus', emoji: '🍊' },
-  { id: 'stone', name: 'Stone Fruits', emoji: '🍑' },
   { id: 'core', name: 'Core Fruits', emoji: '🍎' },
   { id: 'melons', name: 'Melons', emoji: '🍉' }
 ];
 
-export interface PopularBowl {
-  id: number;
-  name: string;
-  fruits: string[];
-  price: number;
-  emoji: string;
-}
-
-export const popularBowls: PopularBowl[] = [
-  {
-    id: 1,
-    name: 'Berry Blast',
-    fruits: ['Apple', 'Grapes', 'Banana', 'Mango', 'Orange', 'Guava'],
-    price: 50,
-    emoji: '🫐'
-  },
-  {
-    id: 2,
-    name: 'Tropical Paradise',
-    fruits: ['Mango', 'Pineapple', 'Banana', 'Papaya', 'Guava', 'Orange'],
-    price: 50,
-    emoji: '🥭'
-  },
-  {
-    id: 3,
-    name: 'Citrus Sunrise',
-    fruits: ['Orange', 'Pineapple', 'Apple', 'Mango', 'Grapes', 'Banana'],
-    price: 50,
-    emoji: '🍊'
-  },
-  {
-    id: 4,
-    name: 'Summer Delight',
-    fruits: ['Watermelon', 'Mango', 'Grapes', 'Apple', 'Banana', 'Orange'],
-    price: 50,
-    emoji: '🍉'
-  }
-];
-
-// Predefined weekly menu for subscription
+// Predefined weekly menu for subscription (admin controlled - based on reference image)
 export interface WeeklyMenuItem {
   day: number;
   dayName: string;
-  fruits: string[];
+  items: string[];
 }
 
 export const weeklyMenu: WeeklyMenuItem[] = [
-  { day: 1, dayName: 'Day 1', fruits: ['Apple', 'Guava', 'Mango', 'Banana'] },
-  { day: 2, dayName: 'Day 2', fruits: ['Papaya', 'Pineapple', 'Apple', 'Orange'] },
-  { day: 3, dayName: 'Day 3', fruits: ['Banana', 'Chikoo', 'Mango', 'Guava'] },
-  { day: 4, dayName: 'Day 4', fruits: ['Apple', 'Papaya', 'Orange', 'Grapes'] },
-  { day: 5, dayName: 'Day 5', fruits: ['Mango', 'Banana', 'Pineapple', 'Guava'] },
-  { day: 6, dayName: 'Day 6', fruits: ['Mixed Seasonal Bowl'] }
+  { 
+    day: 1, 
+    dayName: 'Monday', 
+    items: ['Bread Jam', 'Carrot', 'Beetroot', 'Guava', 'Peanuts & Jaggery', 'Watermelon', 'Dry Fruits']
+  },
+  { 
+    day: 2, 
+    dayName: 'Tuesday', 
+    items: ['Bread Jam', 'Carrot', 'Cucumber', 'Papaya', 'Sweet Potato', 'Grapes', 'Dry Fruits']
+  },
+  { 
+    day: 3, 
+    dayName: 'Wednesday', 
+    items: ['Bread & Jam', 'Carrot', 'Beetroot', 'Salad', 'Muskmelon', 'Pomegranate', 'Dry Fruits']
+  },
+  { 
+    day: 4, 
+    dayName: 'Thursday', 
+    items: ['Bread & Jam', 'Carrot', 'Cucumber', 'Sweet Corn', 'Pineapple', 'Watermelon', 'Dry Fruits']
+  },
+  { 
+    day: 5, 
+    dayName: 'Friday', 
+    items: ['Bread & Jam', 'Carrot', 'Beetroot', 'Boiled Sangalu', 'Papaya', 'Guava', 'Dry Fruits']
+  },
+  { 
+    day: 6, 
+    dayName: 'Saturday', 
+    items: ['Bread & Jam', 'Carrot', 'Cucumber', 'Boiled Vegetable', 'Muskmelon', 'Grapes', 'Dry Fruits']
+  }
 ];
 
 export interface OrderStatus {

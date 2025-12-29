@@ -107,7 +107,7 @@ const CheckoutScreen = () => {
               <div className="space-y-1">
                 {weeklyMenu.slice(0, 3).map((day) => (
                   <p key={day.day} className="text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">{day.dayName}:</span> {day.fruits.join(', ')}
+                    <span className="font-medium text-foreground">{day.dayName}:</span> {day.items.slice(0, 3).join(', ')}...
                   </p>
                 ))}
                 <p className="text-xs text-primary">+ 3 more days...</p>

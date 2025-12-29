@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { weeklyMenu } from '@/data/dummyData';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Calendar } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 
 const SubscriptionScreen = () => {
   const navigate = useNavigate();
   const { setIsSubscription, WEEKLY_SUBSCRIPTION_PRICE, ONE_TIME_BOWL_PRICE } = useCart();
 
   const benefits = [
-    { emoji: '🍓', text: 'Fresh fruits delivered 6 days a week' },
+    { emoji: '🍓', text: 'Fresh items delivered 6 days a week' },
     { emoji: '💰', text: 'Save more compared to one-time orders' },
     { emoji: '🚚', text: 'Free delivery on all orders' },
     { emoji: '📅', text: 'Predefined menu - no customization needed' },
@@ -37,7 +37,7 @@ const SubscriptionScreen = () => {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-2xl font-bold text-foreground">Weekly Subscription</h1>
-        <p className="text-foreground/80 mt-1">Get fresh fruit bowls delivered to your doorstep</p>
+        <p className="text-foreground/80 mt-1">Get fresh items delivered to your doorstep</p>
         <span className="absolute -right-8 -bottom-8 text-[120px] opacity-20">🍎</span>
       </div>
 
@@ -55,30 +55,34 @@ const SubscriptionScreen = () => {
             </span>
             <h3 className="font-semibold text-primary text-sm mb-1">Weekly Plan</h3>
             <p className="text-3xl font-bold text-primary">₹{WEEKLY_SUBSCRIPTION_PRICE}</p>
-            <p className="text-xs text-muted-foreground mt-1">per week (6 bowls)</p>
+            <p className="text-xs text-muted-foreground mt-1">per week (6 days)</p>
           </div>
         </div>
 
-        {/* Weekly Menu */}
+        {/* Weekly Menu - Admin Controlled */}
         <div className="bg-card rounded-xl p-5 shadow-fruit">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="w-5 h-5 text-primary" />
-            <h3 className="font-bold text-foreground text-lg">Weekly Menu</h3>
+            <h3 className="font-bold text-foreground text-lg">Weekly Plan</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Our chef curates a fresh menu for you every week. No customization needed!
+            Our menu is predefined by admin. No customization available.
           </p>
           <div className="space-y-3">
             {weeklyMenu.map((day) => (
-              <div key={day.day} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold flex-shrink-0">
-                  {day.day}
-                </div>
-                <div className="flex-1">
+              <div key={day.day} className="p-3 bg-muted rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                    {day.day}
+                  </div>
                   <h4 className="font-semibold text-foreground text-sm">{day.dayName}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {day.fruits.join(' • ')}
-                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1 ml-10">
+                  {day.items.map((item, idx) => (
+                    <span key={idx} className="text-xs bg-background px-2 py-1 rounded-full text-muted-foreground">
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
             ))}
@@ -104,8 +108,8 @@ const SubscriptionScreen = () => {
           <div className="space-y-4">
             {[
               { step: '1', title: 'Subscribe', desc: 'Choose weekly subscription' },
-              { step: '2', title: 'We prepare', desc: 'Fresh bowls from our menu' },
-              { step: '3', title: 'Enjoy daily', desc: '6 days of fresh fruits' }
+              { step: '2', title: 'We prepare', desc: 'Fresh items from our menu' },
+              { step: '3', title: 'Enjoy daily', desc: '6 days of fresh deliveries' }
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
