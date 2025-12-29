@@ -2,17 +2,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fruits } from '@/data/dummyData';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Plus, Minus, ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Plus, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const FruitDetailScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
-  const [quantity, setQuantity] = useState(1);
+  const { addToCart, cart, getSelectedFruitsCount, REQUIRED_FRUITS, removeFromCart } = useCart();
 
   const fruit = fruits.find(f => f.id === Number(id));
+  const selectedCount = getSelectedFruitsCount();
+  const isInBowl = cart.some(item => item.id === `fruit-${fruit?.id}`);
+  const canAddMore = selectedCount < REQUIRED_FRUITS;
 
   if (!fruit) {
     return (
@@ -23,17 +24,35 @@ const FruitDetailScreen = () => {
   }
 
   const handleAddToCart = () => {
+    if (isInBowl) {
+      removeFromCart(`fruit-${fruit.id}`);
+      toast({
+        title: "Removed from bowl",
+        description: `${fruit.name} removed from your bowl`,
+      });
+      return;
+    }
+
+    if (!canAddMore) {
+      toast({
+        title: "Maximum fruits reached",
+        description: `You can only select ${REQUIRED_FRUITS} different fruits.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     addToCart({
       id: `fruit-${fruit.id}`,
       name: fruit.name,
-      price: fruit.price,
-      quantity: quantity,
+      price: 0, // No per-fruit pricing
+      quantity: 1,
       image: fruit.image,
       type: 'fruit'
     });
     toast({
       title: "Added to bowl! 🍓",
-      description: `${quantity} ${fruit.name}${quantity > 1 ? 's' : ''} added to your bowl`,
+      description: `${fruit.name} added to your bowl (${selectedCount + 1}/${REQUIRED_FRUITS})`,
     });
   };
 
@@ -62,17 +81,14 @@ const FruitDetailScreen = () => {
       {/* Content */}
       <div className="p-4 space-y-4 -mt-6 relative">
         <div className="bg-card rounded-t-2xl p-5 shadow-fruit-lg">
-          <div className="flex justify-between items-start mb-2">
-            <h1 className="text-2xl font-bold text-foreground">{fruit.name}</h1>
-            <p className="text-2xl font-bold text-primary">₹{fruit.price}</p>
-          </div>
-          <p className="text-muted-foreground">{fruit.description}</p>
+          <h1 className="text-2xl font-bold text-foreground">{fruit.name}</h1>
+          <p className="text-muted-foreground mt-2">{fruit.description}</p>
         </div>
 
-        {/* Nutrition Info */}
+        {/* Nutrition Info - Accurate data */}
         <div className="bg-card rounded-xl p-4 shadow-fruit">
-          <h3 className="font-semibold text-foreground mb-3">Nutrition Facts</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <h3 className="font-semibold text-foreground mb-3">Nutrition Facts (per 100g)</h3>
+          <div className="grid grid-cols-2 gap-3">
             <div className="bg-muted rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-primary">{fruit.nutrition.calories}</p>
               <p className="text-sm text-muted-foreground">Calories</p>
@@ -80,6 +96,14 @@ const FruitDetailScreen = () => {
             <div className="bg-muted rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-primary">{fruit.nutrition.vitaminC}</p>
               <p className="text-sm text-muted-foreground">Vitamin C</p>
+            </div>
+            <div className="bg-muted rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-primary">{fruit.nutrition.fiber}</p>
+              <p className="text-sm text-muted-foreground">Fiber</p>
+            </div>
+            <div className="bg-muted rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-primary">{fruit.nutrition.vitaminA}</p>
+              <p className="text-sm text-muted-foreground">Vitamin A</p>
             </div>
           </div>
         </div>
@@ -90,7 +114,6 @@ const FruitDetailScreen = () => {
             {fruit.category === 'Berries' && '🫐'}
             {fruit.category === 'Tropical' && '🥭'}
             {fruit.category === 'Citrus' && '🍊'}
-            {fruit.category === 'Stone' && '🍑'}
             {fruit.category === 'Core' && '🍎'}
             {fruit.category === 'Melons' && '🍉'}
           </span>
@@ -101,38 +124,34 @@ const FruitDetailScreen = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom Bar */}
+      {/* Fixed Bottom Bar - NO PRICE DISPLAY */}
       <div className="fixed bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-card border-t border-border p-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 bg-muted rounded-full p-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            >
-              <Minus className="w-5 h-5" />
-            </Button>
-            <span className="font-bold text-lg min-w-[2ch] text-center">{quantity}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full"
-              onClick={() => setQuantity(Math.min(10, quantity + 1))}
-            >
-              <Plus className="w-5 h-5" />
-            </Button>
-          </div>
-          <Button
-            variant="fruit"
-            size="lg"
-            className="flex-1"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            Add to Bowl - ₹{fruit.price * quantity}
-          </Button>
+        <div className="mb-3">
+          <p className="text-sm text-muted-foreground text-center">
+            {selectedCount}/{REQUIRED_FRUITS} fruits selected for your bowl
+          </p>
         </div>
+        <Button
+          variant={isInBowl ? "secondary" : "fruit"}
+          size="lg"
+          fullWidth
+          onClick={handleAddToCart}
+          disabled={!isInBowl && !canAddMore}
+        >
+          {isInBowl ? (
+            <>
+              <Check className="w-5 h-5" />
+              In Your Bowl - Tap to Remove
+            </>
+          ) : canAddMore ? (
+            <>
+              <Plus className="w-5 h-5" />
+              Add to Bowl
+            </>
+          ) : (
+            'Bowl is Full (6 fruits)'
+          )}
+        </Button>
       </div>
     </div>
   );

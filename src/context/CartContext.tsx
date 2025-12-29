@@ -44,9 +44,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubscription, setIsSubscription] = useState(false);
 
-  // Fixed pricing constants
+  // Fixed pricing constants (internal only - not shown per fruit)
   const ONE_TIME_BOWL_PRICE = 50;
-  const WEEKLY_SUBSCRIPTION_PRICE = 249;
+  const WEEKLY_SUBSCRIPTION_PRICE = 250;
   const REQUIRED_FRUITS = 6;
 
   const addToCart = (item: CartItem) => {
